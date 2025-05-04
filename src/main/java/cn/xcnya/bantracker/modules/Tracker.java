@@ -1,9 +1,7 @@
 package cn.xcnya.bantracker.modules;
 
-import cn.xcnya.bantracker.BanTracker;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import today.opai.api.OpenAPI;
 import today.opai.api.enums.EnumModuleCategory;
 import today.opai.api.features.ExtensionModule;
 import today.opai.api.interfaces.EventHandler;
