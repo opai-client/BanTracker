@@ -12,7 +12,7 @@ public class BanTracker extends Extension {
 
     @Override
     public void initialize(OpenAPI openAPI) {
-        cn.xcnya.bantracker.BanTracker.openAPI = openAPI;
+        BanTracker.openAPI = openAPI;
         openAPI.registerFeature(new Tracker());
     }
 }

@@ -2,10 +2,10 @@ package cn.xcnya.bantracker.modules;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import today.opai.api.OpenAPI;
 import today.opai.api.enums.EnumModuleCategory;
 import today.opai.api.features.ExtensionModule;
 import today.opai.api.interfaces.EventHandler;
-import today.opai.api.OpenAPI;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -13,9 +13,10 @@ import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static cn.xcnya.bantracker.BanTracker.openAPI;
+
 public class Tracker extends ExtensionModule implements EventHandler {
     public static Tracker INSTANCE;
-    private static OpenAPI openAPI;
     private Timer timer;
     private int lastWatchdog = -1;
     private int lastStaff = -1;
