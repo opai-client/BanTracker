@@ -22,7 +22,7 @@ public class LoggerWithOpai {
     public void infoWithHover(String hover,String... msgs){
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         StringBuilder builder = new StringBuilder()
-                .append("§6[").append(sdf.format(new Date())).append("]§r")
+                .append("§6[").append(sdf.format(new Date())).append("]§r ") // 主播对不起我有强迫症
                 .append(prefix).append(" §r");
         for (String s : msgs) {
             builder.append(s).append(" ");

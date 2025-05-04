@@ -78,7 +78,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
                     StringBuilder HoverMessage = new StringBuilder("§6[")
-                            .append(sdf.format(new Date())).append("]§r")
+                            .append(sdf.format(new Date())).append("]§r ")   // 主播对不起我有强迫症
                             .append("§4Hypixel BanTracker Built In Game").append('\n');
                     HoverMessage.append(String.format("§fWatchdog Daily: §c%d §7→ §a %d§r §5+ %d", lastWatchdog, watchdog, wdDiff))
                             .append('\n');
