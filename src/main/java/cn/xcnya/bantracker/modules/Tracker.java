@@ -32,7 +32,8 @@ public class Tracker extends ExtensionModule implements EventHandler {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-            JsonObject json = JsonParser.parseReader(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
+            JsonParser parser = new JsonParser();  // 呵呵，为什么用 2.2.4 害我
+            JsonObject json = parser.parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
             return json.has("success") && json.get("success").getAsBoolean();
         } catch (Exception e) {
             return false;
@@ -46,7 +47,8 @@ public class Tracker extends ExtensionModule implements EventHandler {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
-            JsonObject json = JsonParser.parseReader(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
+            JsonParser parser = new JsonParser(); // 呵呵，为什么用 2.2.4 害我
+            JsonObject json = parser.parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
             if (!json.get("success").getAsBoolean()) return;
 
             JsonObject record = json.getAsJsonObject("record");
