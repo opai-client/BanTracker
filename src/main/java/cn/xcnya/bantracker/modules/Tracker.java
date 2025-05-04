@@ -47,8 +47,12 @@ public class Tracker extends ExtensionModule implements EventHandler {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
-            JsonParser parser = new JsonParser(); // 呵呵，为什么用 2.2.4 害我
-            JsonObject json = parser.parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
+            InputStreamReader reader = new InputStreamReader(conn.getInputStream());
+            JsonParser parser = new JsonParser();
+            JsonObject json = parser.parse(reader).getAsJsonObject();
+
+            System.out.println("[BanTracker] Response JSON: " + json);
+
             if (!json.get("success").getAsBoolean()) return;
 
             JsonObject record = json.getAsJsonObject("record");
@@ -68,8 +72,9 @@ public class Tracker extends ExtensionModule implements EventHandler {
             lastWatchdog = watchdog;
             lastStaff = staff;
 
-        } catch (Exception ignored) {
-            // 呵呵
+        } catch (Exception e) {
+            System.out.println("[BanTracker] Exception: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
