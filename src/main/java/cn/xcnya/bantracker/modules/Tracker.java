@@ -15,7 +15,7 @@ import java.util.TimerTask;
 
 public class Tracker extends ExtensionModule implements EventHandler {
     public static Tracker INSTANCE;
-    public static OpenAPI openAPI;
+    private static OpenAPI openAPI;
     private Timer timer;
     private int lastWatchdog = -1;
     private int lastStaff = -1;
@@ -24,6 +24,18 @@ public class Tracker extends ExtensionModule implements EventHandler {
         super("BanTracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
         setEventHandler(this);
         INSTANCE = this;
+    }
+
+    public static void setAPI(OpenAPI api) {
+        openAPI = api;
+    }
+
+    private void logToChat(String message) {
+        if (openAPI != null) {
+            openAPI.printMessage(message);
+        } else {
+            System.out.println("[BanTracker] ChatLog skipped (openAPI null): " + message);
+        }
     }
 
     private boolean testAPI() {
@@ -63,7 +75,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 int wdDiff = watchdog - lastWatchdog;
                 int stDiff = staff - lastStaff;
                 if (wdDiff > 0 || stDiff > 0) {
-                    openAPI.printMessage("§cBanTracker §7→ " +
+                    logToChat("§cBanTracker §7→ " +
                             (wdDiff > 0 ? ("§fWatchdog: §a+" + wdDiff + " ") : "") +
                             (stDiff > 0 ? ("§fStaff: §c+" + stDiff) : ""));
                 }
@@ -83,7 +95,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         super.onEnabled();
 
         if (!testAPI()) {
-            openAPI.printMessage("§cBanTracker §7→ §cAPI 不可用，模块已关闭。");
+            logToChat("§cBanTracker §7→ §cAPI 不可用，模块已关闭。");
             return;
         }
 
