@@ -82,18 +82,21 @@ public class Tracker extends ExtensionModule implements EventHandler {
     public void onEnabled() {
         super.onEnabled();
 
-        if (!testAPI()) {
-            openAPI.printMessage("§cBanTracker §7→ §cAPI 不可用，模块已关闭。");
-            return;
-        }
-
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                trackBans();
+        new Thread(() -> {
+            if (!testAPI()) {
+                openAPI.getModuleManager().getModule("BanTracker").setEnabled(false);
+                openAPI.printMessage("§cBanTracker §7→ §cAPI 不可用，模块已关闭。");
+                return;
             }
-        }, 0, 5000);
+
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    trackBans();
+                }
+            }, 0, 5000);
+        }, "BanTracker-Init").start();
     }
 
     @Override
