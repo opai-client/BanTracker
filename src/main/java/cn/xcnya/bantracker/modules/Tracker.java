@@ -51,7 +51,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
             JsonParser parser = new JsonParser();
             JsonObject json = parser.parse(reader).getAsJsonObject();
 
-            System.out.println("[BanTracker] Response JSON: " + json);
+            // System.out.println("[BanTracker] Response JSON: " + json);
 
             if (!json.get("success").getAsBoolean()) return;
 
