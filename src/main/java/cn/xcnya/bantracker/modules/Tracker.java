@@ -1,5 +1,6 @@
 package cn.xcnya.bantracker.modules;
 
+import cn.xcnya.bantracker.BanTracker;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import today.opai.api.OpenAPI;
@@ -25,18 +26,6 @@ public class Tracker extends ExtensionModule implements EventHandler {
         super("BanTracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
         setEventHandler(this);
         INSTANCE = this;
-    }
-
-    public static void setAPI(OpenAPI api) {
-        openAPI = api;
-    }
-
-    private void logToChat(String message) {
-        if (openAPI != null) {
-            openAPI.printMessage(message);
-        } else {
-            System.out.println("[BanTracker] ChatLog skipped (openAPI null): " + message);
-        }
     }
 
     private boolean testAPI() {
@@ -76,7 +65,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 int wdDiff = watchdog - lastWatchdog;
                 int stDiff = staff - lastStaff;
                 if (wdDiff > 0 || stDiff > 0) {
-                    logToChat("§cBanTracker §7→ " +
+                    openAPI.printMessage("§cBanTracker §7→ " +
                             (wdDiff > 0 ? ("§fWatchdog: §a+" + wdDiff + " ") : "") +
                             (stDiff > 0 ? ("§fStaff: §c+" + stDiff) : ""));
                 }
@@ -96,7 +85,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         super.onEnabled();
 
         if (!testAPI()) {
-            logToChat("§cBanTracker §7→ §cAPI 不可用，模块已关闭。");
+            openAPI.printMessage("§cBanTracker §7→ §cAPI 不可用，模块已关闭。");
             return;
         }
 
