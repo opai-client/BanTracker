@@ -1,6 +1,5 @@
 package cn.xcnya.bantracker.modules;
 
-import cherryhikari.utils.LoggerWithOpai;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import okhttp3.OkHttpClient;
@@ -29,7 +28,6 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private final ModeValue Mode = openAPI.getValueManager().createModes("Display Style", "Default", new String[]{"Default", "Opai IRC", "Funny"});
 
     private final OkHttpClient client = new OkHttpClient();
-    private final LoggerWithOpai logger = new LoggerWithOpai(openAPI,"§cBanTracker §7→");
 
     public Tracker() {
         super("BanTracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
@@ -58,12 +56,16 @@ public class Tracker extends ExtensionModule implements EventHandler {
         return trackerPunishment().isPresent();
     }
 
-    private TrackerStyle getStyleInstance(String name) {
-        return switch (name) {
-            case "Opai IRC" -> new IRC();
-            case "Funny"    -> new Funny();
-            default         -> new Default();
-        };
+    private TrackerStyle getStyleInstance(String mode) {
+        switch (mode) {
+            case "Opai IRC":
+                return new IRC(openAPI);
+            case "Funny":
+                return new Funny(openAPI);
+            case "Default":
+            default:
+                return new Default(openAPI);
+        }
     }
 
     private void trackBans() {
@@ -82,10 +84,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
                 if (wdDiff > 0 || stDiff > 0) {
                     TrackerStyle style = getStyleInstance(Mode.getValue());
-                    String msg = style.getMessage(wdDiff, stDiff, punishmentData);
-                    String hover = style.getHover(wdDiff, stDiff, lastWatchdog, lastStaff, punishmentData);
-
-                    logger.infoWithHover(hover, msg);
+                    style.print(wdDiff, stDiff, lastWatchdog, lastStaff, punishmentData);
                 }
             }
 
@@ -103,7 +102,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         new Thread(() -> {
             if (!testAPI()) {
                 openAPI.getModuleManager().getModule("BanTracker").setEnabled(false);
-                logger.info("API 不可用，模块已关闭。");
+                openAPI.printMessage("§e[Ban Tracker] API 不可用，模块已关闭。");
                 return;
             }
 
