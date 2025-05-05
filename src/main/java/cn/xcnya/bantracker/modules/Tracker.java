@@ -30,7 +30,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private final OkHttpClient client = new OkHttpClient();
 
     public Tracker() {
-        super("BanTracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
+        super("Ban Tracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
         super.addValues(Mode);
         setEventHandler(this);
         INSTANCE = this;
