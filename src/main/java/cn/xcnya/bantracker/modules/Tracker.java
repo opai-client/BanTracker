@@ -141,15 +141,13 @@ public class Tracker extends ExtensionModule implements EventHandler {
     }
 
     @Override
-    public boolean isHidden() {
-        // 隐藏不是一个好习惯！
-        return super.isHidden();
-    }
-
-    @Override
     public String getSuffix() {
-        return String.format("%d %d",
-                punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt(),
-                punishmentData.getAsJsonObject("watchdog").get("last_half_hour").getAsInt());
+        try{
+            return String.format("%d %d",
+                    punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt(),
+                    punishmentData.getAsJsonObject("staff").get("last_half_hour").getAsInt());
+        }catch (Exception ignored){
+            return super.getSuffix();
+        }
     }
 }
