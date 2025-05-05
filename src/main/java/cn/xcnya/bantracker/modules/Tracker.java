@@ -91,8 +91,8 @@ public class Tracker extends ExtensionModule implements EventHandler {
                             .append('\n');
                     HoverMessage.append(String.format("§fStaff Total: §c%d §7→ §a %d§r §5+ %d", lastStaff, staff, stDiff)).append("§r").append('\n');
 
-                    HoverMessage.append(String.format("§fWatchdog Last Minute: §c%d\n", punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt()));
-                    HoverMessage.append(String.format("§fStaff Within Half Hour: §a%d", punishmentData.getAsJsonObject("staff").get("last_half_hour").getAsInt()));
+                    HoverMessage.append(String.format("§fWatchdog Last Minute: §a%d\n", punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt()));
+                    HoverMessage.append(String.format("§fStaff Within Half Hour: §c%d", punishmentData.getAsJsonObject("staff").get("last_half_hour").getAsInt()));
 
                     logger.infoWithHover(HoverMessage.toString(), trackerMsg.toString());
                 }
@@ -148,6 +148,8 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
     @Override
     public String getSuffix() {
-        return Integer.toString(punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt());
+        return String.format("%d %d",
+                punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt(),
+                punishmentData.getAsJsonObject("watchdog").get("last_half_hour").getAsInt());
     }
 }
