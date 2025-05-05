@@ -4,37 +4,54 @@ import com.google.gson.JsonObject;
 import today.opai.api.OpenAPI;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 public class LoggerWithOpai {
-    OpenAPI api = null;
-    String prefix = null;
-    public LoggerWithOpai(OpenAPI api,String prefix) {
+    private volatile boolean timeLogEnabled = true; // 新增时间日志开关
+    private final OpenAPI api;
+    private final String prefix;
+
+    public LoggerWithOpai(OpenAPI api, String prefix) {
         this.api = api;
         this.prefix = prefix;
     }
 
-    public void info(String... msgs){
-        infoWithHover(null, Arrays.toString(msgs));
+    // 新增开关控制方法
+    public void enableTimeLog(boolean enabled) {
+        this.timeLogEnabled = enabled;
     }
 
-    public void infoWithHover(String hover,String... msgs){
+    public void info(String... msgs) {
+        infoWithHover(null, msgs);
+    }
+
+    public void infoWithHover(String hover, String... msgs) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        StringBuilder builder = new StringBuilder()
-                .append("§6[").append(sdf.format(new Date())).append("]§r ") // 主播对不起我有强迫症
-                .append(prefix).append(" §r");
+        StringBuilder builder = new StringBuilder();
+
+        if (timeLogEnabled) {
+            builder.append("§6[")
+                    .append(sdf.format(new Date()))
+                    .append("]§r ");
+        }
+
+        builder.append(prefix)
+                .append(" §r");
+
         for (String s : msgs) {
             builder.append(s).append(" ");
         }
+
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", builder.toString());
+
         if (hover != null) {
             JsonObject hoverObject = new JsonObject();
             hoverObject.addProperty("action", "show_text");
             hoverObject.addProperty("value", hover);
             jsonObject.add("hoverEvent", hoverObject);
         }
+
         api.printChatComponent(jsonObject.toString());
     }
 }
