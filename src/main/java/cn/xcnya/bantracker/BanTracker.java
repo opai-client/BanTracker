@@ -6,7 +6,7 @@ import today.opai.api.annotations.ExtensionInfo;
 import cn.xcnya.bantracker.modules.Tracker;
 
 // Required @ExtensionInfo annotation
-@ExtensionInfo(name = "Ban Tracker",author = "libxcnya.so, SakuraNiroku",version = "1.3")
+@ExtensionInfo(name = "Ban Tracker",author = "libxcnya.so, SakuraNiroku",version = "1.4")
 public class BanTracker extends Extension {
     public static OpenAPI openAPI;
 
@@ -14,5 +14,10 @@ public class BanTracker extends Extension {
     public void initialize(OpenAPI openAPI) {
         BanTracker.openAPI = openAPI;
         openAPI.registerFeature(new Tracker());
+    }
+
+    @Override
+    public void onUnload() {
+        Tracker.INSTANCE.disableTimer();
     }
 }
