@@ -26,14 +26,14 @@ public class Funny implements TrackerStyle {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         if (wdDiff > 0) {
-            String msg = "§e刚刚有" + wdDiff + " 个人上门报警，被狗咬死了。";
+            String msg = "§e刚刚有 " + wdDiff + " 个人上门报警，被狗咬死了。";
             String hover = String.format("§6[%s]§r §e来自 Watchdog 的封禁\n§f前: §c%d §7→ §a%d §5(+%d)",
                     sdf.format(new Date()), lastWD, lastWD + wdDiff, wdDiff);
             watchdogLogger.infoWithHover(hover, msg);
         }
 
         if (stDiff > 0) {
-            String msg = "§g刚刚有" + stDiff + " 个人上门报警，被帽子逮捕了。";
+            String msg = "§6刚刚有 " + stDiff + " 个人上门报警，被帽子逮捕了。";
             String hover = String.format("§6[%s]§r §d来自 Staff 的封禁\n§f前: §c%d §7→ §a%d §5(+%d)",
                     sdf.format(new Date()), lastST, lastST + stDiff, stDiff);
             staffLogger.infoWithHover(hover, msg);
