@@ -3,6 +3,9 @@ package cn.xcnya.bantracker.modules;
 import cherryhikari.utils.LoggerWithOpai;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import today.opai.api.enums.EnumModuleCategory;
 import today.opai.api.features.ExtensionModule;
 import today.opai.api.interfaces.EventHandler;
@@ -15,14 +18,21 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static cn.xcnya.bantracker.BanTracker.openAPI;
 
 public class Tracker extends ExtensionModule implements EventHandler {
     public static Tracker INSTANCE;
     private Timer timer;
+
     private int lastWatchdog = -1;
     private int lastStaff = -1;
+    private JsonObject punishmentData = new JsonObject();
+
+    private final OkHttpClient client = new OkHttpClient();
 
     private final LoggerWithOpai logger = new LoggerWithOpai(openAPI,"§cBanTracker §7→");
 
@@ -34,16 +44,14 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
     private Optional<JsonObject> trackerPunishment(){
         try {
-            URL url = new URL("https://api.plancke.io/hypixel/v1/punishmentStats");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-            JsonParser parser = new JsonParser();  // 呵呵，为什么用 2.2.4 害我
-            if (conn.getResponseCode() != 200){
-                return Optional.empty();
+            Request request = new Request.Builder()
+                    .url("https://bantracker.qxiao.eu.org/")
+                    .build();
+
+            try(Response response = client.newCall(request).execute()){
+                if (response.code() != 200) return Optional.empty();
+                return Optional.of(new JsonParser().parse(response.body().string()).getAsJsonObject());
             }
-            JsonObject json = parser.parse(new InputStreamReader(conn.getInputStream())).getAsJsonObject();
-            return Optional.of(json);
 
         } catch (Exception ignored) {
             return Optional.empty();
@@ -59,11 +67,10 @@ public class Tracker extends ExtensionModule implements EventHandler {
             Optional<JsonObject> punishment = trackerPunishment();
             if (!punishment.isPresent())
                 return;
-            JsonObject json = punishment.get();
+            punishmentData = punishment.get();
 
-            JsonObject record = json.getAsJsonObject("record");
-            int watchdog = record.get("watchdog_rollingDaily").getAsInt();
-            int staff = record.get("staff_rollingDaily").getAsInt();
+            int watchdog = punishmentData.getAsJsonObject("watchdog").get("total").getAsInt();
+            int staff = punishmentData.getAsJsonObject("staff").get("total").getAsInt();
 
             if (lastWatchdog != -1 && lastStaff != -1) {
                 int wdDiff = watchdog - lastWatchdog;
@@ -78,11 +85,14 @@ public class Tracker extends ExtensionModule implements EventHandler {
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
                     StringBuilder HoverMessage = new StringBuilder("§6[")
-                            .append(sdf.format(new Date())).append("]§r ")   // 主播对不起我有强迫症
+                            .append(sdf.format(new Date())).append("]§r ")
                             .append("§4Hypixel BanTracker Built In Game").append('\n');
-                    HoverMessage.append(String.format("§fWatchdog Daily: §c%d §7→ §a %d§r §5+ %d", lastWatchdog, watchdog, wdDiff))
+                    HoverMessage.append(String.format("§fWatchdog Total: §c%d §7→ §a %d§r §5+ %d", lastWatchdog, watchdog, wdDiff))
                             .append('\n');
-                    HoverMessage.append(String.format("§fStaff Daily: §c%d §7→ §a %d§r §5+ %d", lastStaff, staff, stDiff));
+                    HoverMessage.append(String.format("§fStaff Total: §c%d §7→ §a %d§r §5+ %d", lastStaff, staff, stDiff)).append("§r").append('\n');
+
+                    HoverMessage.append(String.format("§fWatchdog Last Minute: §c%d\n", punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt()));
+                    HoverMessage.append(String.format("§fStaff Within Half Hour: §a%d", punishmentData.getAsJsonObject("staff").get("last_half_hour").getAsInt()));
 
                     logger.infoWithHover(HoverMessage.toString(), trackerMsg.toString());
                 }
@@ -117,17 +127,27 @@ public class Tracker extends ExtensionModule implements EventHandler {
         }, "BanTracker-Init").start();
     }
 
-    @Override
-    public void onDisabled() {
+    public void disableTimer(){
         if (timer != null) {
             timer.cancel();
+            timer.purge();
             timer = null;
         }
+    }
+
+    @Override
+    public void onDisabled() {
+        disableTimer();
     }
 
     @Override
     public boolean isHidden() {
         // 隐藏不是一个好习惯！
         return super.isHidden();
+    }
+
+    @Override
+    public String getSuffix() {
+        return Integer.toString(punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt());
     }
 }
