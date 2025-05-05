@@ -13,7 +13,7 @@ public class Funny implements TrackerStyle {
 
     public Funny(OpenAPI openAPI) {
         this.watchdogLogger = new LoggerWithOpai(openAPI, "§e[WATCHDOG]");
-        this.staffLogger    = new LoggerWithOpai(openAPI, "§g[STAFF]");
+        this.staffLogger    = new LoggerWithOpai(openAPI, "§6[STAFF]");
 
         watchdogLogger.enableTimeLog(false);
         staffLogger.enableTimeLog(false);
