@@ -39,7 +39,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private Optional<JsonObject> trackerPunishment(){
         try {
             Request request = new Request.Builder()
-                    .url("https://bantracker.qxiao.eu.org/")
+                    .url("https://bantracker.23312355.xyz/")
                     .build();
 
             try(Response response = client.newCall(request).execute()){
