@@ -12,6 +12,7 @@ import today.opai.api.interfaces.modules.values.ModeValue;
 
 import cn.xcnya.bantracker.styles.*;
 
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,13 +26,37 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private int lastWatchdog = -1;
     private int lastStaff = -1;
     private JsonObject punishmentData = new JsonObject();
-    private final ModeValue Mode = openAPI.getValueManager().createModes("Display Style", "Default", new String[]{"Default", "Opai IRC", "Funny"});
+    private final HashMap<String, TrackerStyle> stylesMap = new HashMap<>();
+    private final ModeValue styles;
+    {
+        stylesMap.put("Default", new Default(openAPI));
+        stylesMap.put("Opai IRC", new IRC(openAPI));
+        stylesMap.put("Funny", new Funny(openAPI));
+
+        String[] modes = stylesMap.keySet().toArray(new String[0]);
+
+        styles = openAPI.getValueManager().createModes("Display Style", "Default", modes);
+    }
+
+    private final HashMap<String, String> remoteApis = new HashMap<>();
+    private final ModeValue apis;
+    {
+        remoteApis.put("sakuraniroku","https://bantracker.23312355.xyz");
+        remoteApis.put("niko233","https://bantracker.niko233.me");
+//        remoteApis.put("niko233-yescdn","https://bantracker-cdnyes.niko233.me");
+        //trash cdn
+        String[] remotes = remoteApis.keySet().toArray(new String[0]);
+
+        apis = openAPI.getValueManager().createModes("Source", "sakuraniroku", remotes);
+
+    }
+
 
     private final OkHttpClient client = new OkHttpClient();
 
     public Tracker() {
         super("Ban Tracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
-        super.addValues(Mode);
+        super.addValues(styles,apis);
         setEventHandler(this);
         INSTANCE = this;
     }
@@ -39,7 +64,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private Optional<JsonObject> trackerPunishment(){
         try {
             Request request = new Request.Builder()
-                    .url("https://bantracker.23312355.xyz/")
+                    .url(remoteApis.get(apis.getValue()))
                     .build();
 
             try(Response response = client.newCall(request).execute()){
@@ -57,15 +82,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
     }
 
     private TrackerStyle getStyleInstance(String mode) {
-        switch (mode) {
-            case "Opai IRC":
-                return new IRC(openAPI);
-            case "Funny":
-                return new Funny(openAPI);
-            case "Default":
-            default:
-                return new Default(openAPI);
-        }
+        return stylesMap.get(mode);
     }
 
     private void trackBans() {
@@ -83,7 +100,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 int stDiff = staff    - lastStaff;
 
                 if (wdDiff > 0 || stDiff > 0) {
-                    TrackerStyle style = getStyleInstance(Mode.getValue());
+                    TrackerStyle style = getStyleInstance(styles.getValue());
                     style.print(wdDiff, stDiff, lastWatchdog, lastStaff, punishmentData);
                 }
             }
