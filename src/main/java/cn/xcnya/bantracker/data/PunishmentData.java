@@ -2,7 +2,6 @@ package cn.xcnya.bantracker.data;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,20 +11,20 @@ import java.util.List;
  * @date 2025/5/8 04:58
  **/
 public class PunishmentData {
-    public Staff staff = new Staff();
-    public Watchdog watchdog = new Watchdog();
-    public List<History> history = Collections.emptyList();
+    public Staff staff;
+    public Watchdog watchdog;
+    public List<History> history; // 你说得对但是 0个用法
 
     //staff和watchdog的field都不同，如果一样用一个class就可以了
     public static class Staff {
-        @SerializedName("last_half_hour") public int lastHalfHour = 0;
-        @SerializedName("last_day") public int lastDay = 0;
-        public int total = 0;
+        @SerializedName("last_half_hour") public int lastHalfHour;
+        @SerializedName("last_day") public int lastDay;
+        public int total;
     }
     public static class Watchdog {
-        @SerializedName("last_minute") public int lastMinute = 0;
-        @SerializedName("last_day") public int lastDay = 0;
-        public int total = 0;
+        @SerializedName("last_minute") public int lastMinute;
+        @SerializedName("last_day") public int lastDay;
+        public int total;
     }
     public static class History {
         public long time;
