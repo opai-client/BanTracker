@@ -1,7 +1,7 @@
 package cn.xcnya.bantracker.styles;
 
-import cherryhikari.utils.LoggerWithOpai;
-import com.google.gson.JsonObject;
+import cn.xcnya.bantracker.utils.LoggerWithOpai;
+import cn.xcnya.bantracker.data.PunishmentData;
 import today.opai.api.OpenAPI;
 
 import java.text.SimpleDateFormat;
@@ -20,7 +20,7 @@ public class Funny implements TrackerStyle {
     }
 
     @Override
-    public void print(int wdDiff, int stDiff, int lastWD, int lastST, JsonObject data) {
+    public void print(int wdDiff, int stDiff, int lastWD, int lastST, PunishmentData data) {
         if (wdDiff <= 0 && stDiff <= 0) return;
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
