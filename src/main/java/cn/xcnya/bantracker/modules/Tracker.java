@@ -43,8 +43,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
     {
         remoteApis.put("sakuraniroku","https://bantracker.23312355.xyz");
         remoteApis.put("niko233","https://bantracker.niko233.me");
-//        remoteApis.put("niko233-yescdn","https://bantracker-cdnyes.niko233.me");
-        //trash cdn
+        remoteApis.put("libxcnya","https://bantracker-api.xcnya.cn");
         String[] remotes = remoteApis.keySet().toArray(new String[0]);
 
         apis = openAPI.getValueManager().createModes("Source", "sakuraniroku", remotes);
