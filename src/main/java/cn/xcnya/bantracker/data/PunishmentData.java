@@ -13,9 +13,9 @@ import java.util.List;
 public class PunishmentData {
     public Staff staff;
     public Watchdog watchdog;
-    public List<History> history; // 你说得对但是 0个用法
+    public List<History> history; // 你说得对但是 0个用法 //hehe
 
-    //staff和watchdog的field都不同，如果一样用一个class就可以了
+    //staff和watchdog的field都不同，如果一样用一个class就可以了 //怪我？
     public static class Staff {
         @SerializedName("last_half_hour") public int lastHalfHour;
         @SerializedName("last_day") public int lastDay;
@@ -29,7 +29,7 @@ public class PunishmentData {
     public static class History {
         public long time;
         @SerializedName("formated") public String formattedTime; // formated?
-        public boolean watchdog; // boolean是坏习惯
+        public boolean watchdog; // boolean是坏习惯 //i like
         @SerializedName("number") public int count;
     }
 }

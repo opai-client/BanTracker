@@ -24,9 +24,9 @@ public class Default implements TrackerStyle {
 
         String hover = String.format("§6[%s]§r §4Hypixel BanTracker\n", sdf.format(new Date())) +
                 String.format("§fWatchdog Total: §c%d §7→ §a%d §5(+%d)\n", lastWD, lastWD + wdDiff, wdDiff) +
-                String.format("§fStaff Total:    §c%d §7→ §a%d §5(+%d)\n", lastST, lastST + stDiff, stDiff) +
+                String.format("§fStaff Total: §c%d §7→ §a%d §5(+%d)\n", lastST, lastST + stDiff, stDiff) +
                 String.format("§fWatchdog Last Minute: §a%d\n", data.watchdog.lastMinute) +
-                String.format("§fStaff  Half Hour:    §c%d", data.staff.lastHalfHour);
+                String.format("§fStaff Half Hour: §c%d", data.staff.lastHalfHour);
 
         logger.infoWithHover(hover, msg.trim());
     }
