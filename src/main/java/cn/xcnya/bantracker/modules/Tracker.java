@@ -44,6 +44,9 @@ public class Tracker extends ExtensionModule implements EventHandler {
         remoteApis.put("sakuraniroku","https://bantracker.23312355.xyz");
         remoteApis.put("niko233","https://bantracker.niko233.me");
         remoteApis.put("libxcnya","https://bantracker-api.xcnya.cn");
+
+        // TODO: Auto switch when request or init failed
+
         String[] remotes = remoteApis.keySet().toArray(new String[0]);
 
         apis = openAPI.getValueManager().createModes("Source", "sakuraniroku", remotes);
@@ -64,6 +67,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         try {
             Request request = new Request.Builder()
                     .url(remoteApis.get(apis.getValue()))
+                    .header("User-Agent", "Mozilla/9.0 (compatible; Opai Client™; +https://opai.today)")
                     .build();
 
             try(Response response = client.newCall(request).execute()){
