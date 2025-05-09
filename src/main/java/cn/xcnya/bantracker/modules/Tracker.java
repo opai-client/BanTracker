@@ -1,5 +1,6 @@
 package cn.xcnya.bantracker.modules;
 
+import cn.xcnya.bantracker.BanTracker;
 import cn.xcnya.bantracker.data.PunishmentData;
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
@@ -12,11 +13,10 @@ import today.opai.api.interfaces.modules.values.ModeValue;
 
 import cn.xcnya.bantracker.styles.*;
 
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static cn.xcnya.bantracker.BanTracker.openAPI;
+import static cn.xcnya.bantracker.BanTracker.versionID;
 
 public class Tracker extends ExtensionModule implements EventHandler {
     public static final Gson gson = new Gson();
@@ -63,7 +63,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         try {
             Request request = new Request.Builder()
                     .url(remoteApis.get(apis.getValue()))
-                    .header("User-Agent", "Mozilla/9.0 (compatible; Opai Client™; +https://opai.today)")
+                    .header("User-Agent", "Mozilla/9.0 (Opai Client)")
                     .build();
 
             try(Response response = client.newCall(request).execute()){
@@ -71,7 +71,8 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 return gson.fromJson(response.body().string(), PunishmentData.class);
             }
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            openAPI.printMessage("§4Exception " + e.getLocalizedMessage());
             return null;
         }
     }
@@ -84,8 +85,22 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private void trackBans() {
         try {
             PunishmentData punishmentData = trackerPunishment();
-            if (punishmentData == null) return;
-            setSuffix(punishmentData.watchdog.lastMinute + " " + punishmentData.staff.lastHalfHour);
+            if (punishmentData == null) {
+                Queue<String> availableApis = requestAvailableApis();
+                while (!availableApis.isEmpty()){
+                    apis.setValue(availableApis.poll());
+                    punishmentData = trackerPunishment();
+                    if (punishmentData != null) break;
+                }
+
+                if (punishmentData == null) {
+                    disableModule();
+                    return;
+                }
+                openAPI.printMessage(String.format("§e[Ban Tracker] API 不可用，自动切换至%s。", apis.getValue()));
+
+            }
+            setSuffix(versionID +" "+punishmentData.watchdog.lastMinute + " " + punishmentData.staff.lastHalfHour);
 
             int watchdog = punishmentData.watchdog.total;
             int staff    = punishmentData.staff.total;
@@ -107,15 +122,35 @@ public class Tracker extends ExtensionModule implements EventHandler {
         }
     }
 
+    private Queue<String> requestAvailableApis(){
+        Queue<String> tryingApis = new LinkedList<>();
+        for (String mode : apis.getAllModes()) {
+            if (mode.equals(apis.getValue())) continue;
+            tryingApis.offer(mode);
+        }
+        return tryingApis;
+    }
+
     @Override
     public void onEnabled() {
         new Thread(() -> {
-            if (trackerPunishment() == null) {
-//                openAPI.getModuleManager().getModule("BanTracker").setEnabled(false); // ?
-                setEnabled(false);
-                openAPI.printMessage("§e[Ban Tracker] API 不可用，模块已关闭。");
+            boolean initSuccess = false;
+            Queue<String> tryingApis = requestAvailableApis();
+
+            while (!tryingApis.isEmpty()){
+                apis.setValue(tryingApis.poll());
+                if (trackerPunishment() != null) {
+                    initSuccess = true;
+                    break;
+                }
+            }
+
+            if (!initSuccess) {
+                disableModule();
                 return;
             }
+
+            openAPI.printMessage(String.format("§e[Ban Tracker] API 不可用，自动切换至%s。", apis.getValue()));
 
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
@@ -125,6 +160,11 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 }
             }, 0, 5000);
         }, "BanTracker-Init").start();
+    }
+
+    private void disableModule(){
+        openAPI.printMessage("§e[Ban Tracker] API 不可用，模块已关闭。");
+        setEnabled(false);
     }
 
     public void disableTimer(){
@@ -137,6 +177,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
     @Override
     public void onDisabled() {
+        setSuffix(versionID);
         disableTimer();
     }
 }

@@ -6,8 +6,11 @@ import today.opai.api.annotations.ExtensionInfo;
 import cn.xcnya.bantracker.modules.Tracker;
 
 // Required @ExtensionInfo annotation
-@ExtensionInfo(name = "Ban Tracker",author = "libxcnya.so, SakuraNiroku, renshengongji",version = "1.9")
+@ExtensionInfo(name = "Ban Tracker",author = "libxcnya.so, SakuraNiroku, renshengongji",version = "2.0")
 public class BanTracker extends Extension { //多人运动插件↑
+
+    public static final String versionID = "2.0";
+
     public static OpenAPI openAPI;
 
     @Override

@@ -21,6 +21,7 @@ public class LoggerWithOpai {
         this.timeLogEnabled = enabled;
     }
 
+    @Deprecated
     public void info(String... msgs) {
         infoWithHover(null, msgs);
     }
