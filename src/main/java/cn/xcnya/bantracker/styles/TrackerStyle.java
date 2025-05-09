@@ -1,7 +1,7 @@
 package cn.xcnya.bantracker.styles;
 
-import com.google.gson.JsonObject;
+import cn.xcnya.bantracker.data.PunishmentData;
 
 public interface TrackerStyle {
-    void print(int wdDiff, int stDiff, int lastWD, int lastST, JsonObject data);
+    void print(int wdDiff, int stDiff, int lastWD, int lastST, PunishmentData data);
 }

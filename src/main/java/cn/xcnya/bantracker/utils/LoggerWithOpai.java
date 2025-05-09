@@ -1,4 +1,4 @@
-package cherryhikari.utils;
+package cn.xcnya.bantracker.utils;
 
 import com.google.gson.JsonObject;
 import today.opai.api.OpenAPI;
@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LoggerWithOpai {
-    private volatile boolean timeLogEnabled = true; // 新增时间日志开关
+    private volatile boolean timeLogEnabled = true;
     private final OpenAPI api;
     private final String prefix;
 

@@ -1,7 +1,7 @@
 package cn.xcnya.bantracker.modules;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import cn.xcnya.bantracker.data.PunishmentData;
+import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -13,29 +13,25 @@ import today.opai.api.interfaces.modules.values.ModeValue;
 import cn.xcnya.bantracker.styles.*;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static cn.xcnya.bantracker.BanTracker.openAPI;
 
 public class Tracker extends ExtensionModule implements EventHandler {
+    public static final Gson gson = new Gson();
     public static Tracker INSTANCE;
     private Timer timer;
 
     private int lastWatchdog = -1;
     private int lastStaff = -1;
-    private JsonObject punishmentData = new JsonObject();
     private final HashMap<String, TrackerStyle> stylesMap = new HashMap<>();
     private final ModeValue styles;
     {
         stylesMap.put("Default", new Default(openAPI));
         stylesMap.put("Opai IRC", new IRC(openAPI));
         stylesMap.put("Funny", new Funny(openAPI));
-
-        String[] modes = stylesMap.keySet().toArray(new String[0]);
-
-        styles = openAPI.getValueManager().createModes("Display Style", "Default", modes);
+        styles = openAPI.getValueManager().createModes("Display Style", "Default", stylesMap.keySet().toArray(new String[0]));
     }
 
     private final HashMap<String, String> remoteApis = new HashMap<>();
@@ -57,13 +53,13 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private final OkHttpClient client = new OkHttpClient();
 
     public Tracker() {
-        super("Ban Tracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
+        super("BanStatusTracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
         super.addValues(styles,apis);
         setEventHandler(this);
         INSTANCE = this;
     }
 
-    private Optional<JsonObject> trackerPunishment(){
+    private PunishmentData trackerPunishment(){
         try {
             Request request = new Request.Builder()
                     .url(remoteApis.get(apis.getValue()))
@@ -71,18 +67,15 @@ public class Tracker extends ExtensionModule implements EventHandler {
                     .build();
 
             try(Response response = client.newCall(request).execute()){
-                if (response.code() != 200) return Optional.empty();
-                return Optional.of(new JsonParser().parse(response.body().string()).getAsJsonObject());
+                if (response.code() != 200) return null;
+                return gson.fromJson(response.body().string(), PunishmentData.class);
             }
 
         } catch (Exception ignored) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    private boolean testAPI() {
-        return trackerPunishment().isPresent();
-    }
 
     private TrackerStyle getStyleInstance(String mode) {
         return stylesMap.get(mode);
@@ -90,13 +83,12 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
     private void trackBans() {
         try {
-            Optional<JsonObject> opt = trackerPunishment();
-            if (!opt.isPresent()) return;
+            PunishmentData punishmentData = trackerPunishment();
+            if (punishmentData == null) return;
+            setSuffix(punishmentData.watchdog.lastMinute + " " + punishmentData.staff.lastHalfHour);
 
-            punishmentData = opt.get();
-
-            int watchdog = punishmentData.getAsJsonObject("watchdog").get("total").getAsInt();
-            int staff    = punishmentData.getAsJsonObject("staff").get("total").getAsInt();
+            int watchdog = punishmentData.watchdog.total;
+            int staff    = punishmentData.staff.total;
 
             if (lastWatchdog != -1 && lastStaff != -1) {
                 int wdDiff = watchdog - lastWatchdog;
@@ -117,11 +109,10 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
     @Override
     public void onEnabled() {
-        super.onEnabled();
-
         new Thread(() -> {
-            if (!testAPI()) {
-                openAPI.getModuleManager().getModule("BanTracker").setEnabled(false);
+            if (trackerPunishment() == null) {
+//                openAPI.getModuleManager().getModule("BanTracker").setEnabled(false); // ?
+                setEnabled(false);
                 openAPI.printMessage("§e[Ban Tracker] API 不可用，模块已关闭。");
                 return;
             }
@@ -147,16 +138,5 @@ public class Tracker extends ExtensionModule implements EventHandler {
     @Override
     public void onDisabled() {
         disableTimer();
-    }
-
-    @Override
-    public String getSuffix() {
-        try{
-            return String.format("%d %d",
-                    punishmentData.getAsJsonObject("watchdog").get("last_minute").getAsInt(),
-                    punishmentData.getAsJsonObject("staff").get("last_half_hour").getAsInt());
-        }catch (Exception ignored){
-            return super.getSuffix();
-        }
     }
 }
