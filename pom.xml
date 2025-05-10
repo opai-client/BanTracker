@@ -6,7 +6,7 @@
 
     <groupId>cn.xcnya</groupId>
     <artifactId>BanTracker</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -78,36 +78,6 @@
                     <target>8</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>replacer</artifactId>
-                <version>1.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>replace-version</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <file>src/main/java/cn/xcnya/bantracker/BanTracker.java</file> <!-- 目标文件 -->
-                    <replacements>
-                        <replacement>
-                            <token>\$version\$</token> <!-- 要替换的占位符 -->
-                            <value>${project.version}</value> <!-- 替换为POM版本 -->
-                        </replacement>
-                    </replacements>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-
 </project>
