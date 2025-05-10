@@ -145,7 +145,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
                         break;
                     }
                 }
-            }else initSuccess = true;
+            } else initSuccess = true;
 
 
             if (!initSuccess) {
