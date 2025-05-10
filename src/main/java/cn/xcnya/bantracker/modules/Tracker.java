@@ -137,13 +137,16 @@ public class Tracker extends ExtensionModule implements EventHandler {
             boolean initSuccess = false;
             Queue<String> tryingApis = requestAvailableApis();
 
-            while (!tryingApis.isEmpty()){
-                apis.setValue(tryingApis.poll());
-                if (trackerPunishment() != null) {
-                    initSuccess = true;
-                    break;
+            if (trackerPunishment() == null){
+                while (!tryingApis.isEmpty()){
+                    apis.setValue(tryingApis.poll());
+                    if (trackerPunishment() != null) {
+                        initSuccess = true;
+                        break;
+                    }
                 }
-            }
+            }else initSuccess = true;
+
 
             if (!initSuccess) {
                 disableModule();
