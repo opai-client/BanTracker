@@ -30,6 +30,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         stylesMap.put("Default", new Default(openAPI));
         stylesMap.put("Opai IRC", new IRC(openAPI));
         stylesMap.put("Funny", new Funny(openAPI));
+        stylesMap.put("Island", new Island(openAPI));
         styles = openAPI.getValueManager().createModes("Display Style", "Default", stylesMap.keySet().toArray(new String[0]));
     }
 
