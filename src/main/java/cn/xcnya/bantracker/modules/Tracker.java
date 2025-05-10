@@ -1,6 +1,5 @@
 package cn.xcnya.bantracker.modules;
 
-import cn.xcnya.bantracker.BanTracker;
 import cn.xcnya.bantracker.data.PunishmentData;
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
@@ -41,8 +40,6 @@ public class Tracker extends ExtensionModule implements EventHandler {
         remoteApis.put("niko233","https://bantracker.niko233.me");
         remoteApis.put("libxcnya","https://bantracker-api.xcnya.cn");
 
-        // TODO: Auto switch when request or init failed
-
         String[] remotes = remoteApis.keySet().toArray(new String[0]);
 
         apis = openAPI.getValueManager().createModes("Source", "sakuraniroku", remotes);
@@ -63,7 +60,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
         try {
             Request request = new Request.Builder()
                     .url(remoteApis.get(apis.getValue()))
-                    .header("User-Agent", "Mozilla/9.0 (Opai Client)")
+                    .header("User-Agent", String.format("Mozilla/9.0 (Opai Client v%s)", openAPI.getClientVersion()))
                     .build();
 
             try(Response response = client.newCall(request).execute()){
