@@ -51,7 +51,7 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private final OkHttpClient client = new OkHttpClient();
 
     public Tracker() {
-        super("BanTracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
+        super("Ban Tracker", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
         super.addValues(styles,apis);
         setEventHandler(this);
         INSTANCE = this;
@@ -98,7 +98,9 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 openAPI.printMessage(String.format("§e[Ban Tracker] API 不可用，自动切换至%s。", apis.getValue()));
 
             }
-            setSuffix(versionID +" "+punishmentData.watchdog.lastMinute + " " + punishmentData.staff.lastHalfHour);
+
+            // 我眼睛瞎了，别害我
+            setSuffix(String.format("%d %d", punishmentData.watchdog.lastMinute, punishmentData.staff.lastHalfHour));
 
             int watchdog = punishmentData.watchdog.total;
             int staff    = punishmentData.staff.total;
