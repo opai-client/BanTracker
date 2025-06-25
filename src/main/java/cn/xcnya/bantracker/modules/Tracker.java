@@ -8,10 +8,12 @@ import okhttp3.Response;
 import today.opai.api.enums.EnumModuleCategory;
 import today.opai.api.features.ExtensionModule;
 import today.opai.api.interfaces.EventHandler;
+import today.opai.api.interfaces.modules.values.BooleanValue;
 import today.opai.api.interfaces.modules.values.ModeValue;
 
 import cn.xcnya.bantracker.styles.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static cn.xcnya.bantracker.BanTracker.openAPI;
@@ -21,6 +23,8 @@ public class Tracker extends ExtensionModule implements EventHandler {
     public static final Gson gson = new Gson();
     public static Tracker INSTANCE;
     private Timer timer;
+
+    public final static BooleanValue hidden  = openAPI.getValueManager().createBoolean("Hidden", false);
 
     private int lastWatchdog = -1;
     private int lastStaff = -1;
@@ -47,12 +51,16 @@ public class Tracker extends ExtensionModule implements EventHandler {
 
     }
 
+    private final BooleanValue irc = openAPI.getValueManager().createBoolean("irc",true);
+    {
+        addValues(irc);
+    }
 
     private final OkHttpClient client = new OkHttpClient();
 
     public Tracker() {
         super("Ban Tracker\n", "Trace Hypixel Bans by Staff/Watchdog", EnumModuleCategory.MISC);
-        super.addValues(styles,apis);
+        super.addValues(hidden,styles,apis);
         setEventHandler(this);
         INSTANCE = this;
     }
@@ -109,8 +117,19 @@ public class Tracker extends ExtensionModule implements EventHandler {
                 int wdDiff = watchdog - lastWatchdog;
                 int stDiff = staff    - lastStaff;
 
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 if (wdDiff > 0 || stDiff > 0) {
                     TrackerStyle style = getStyleInstance(styles.getValue());
+                    { //IRC
+                        if (irc.getValue()){
+                            if (wdDiff > 0){
+                                openAPI.getIRC().sendMessage(String.format("[\uD83D\uDC15] [%s] banned %d player.", sdf.format(new Date()),wdDiff));
+                            }
+                            if (stDiff > 0){
+                                openAPI.getIRC().sendMessage(String.format("[\uD83D\uDC6E] [%s] banned %d player.", sdf.format(new Date()),stDiff));
+                            }
+                        }
+                    }
                     style.print(wdDiff, stDiff, lastWatchdog, lastStaff, punishmentData);
                 }
             }
@@ -181,5 +200,10 @@ public class Tracker extends ExtensionModule implements EventHandler {
     public void onDisabled() {
         setSuffix(versionID);
         disableTimer();
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden.getValue();
     }
 }
