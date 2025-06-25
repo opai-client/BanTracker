@@ -9,7 +9,7 @@ import cn.xcnya.bantracker.modules.Tracker;
 @ExtensionInfo(name = "Ban Tracker",author = "libxcnya.so, SakuraNiroku, renshengongji",version = BanTracker.versionID)
 public class BanTracker extends Extension { //多人运动插件↑
 
-    public static final String versionID = "2.0.2";
+    public static final String versionID = "2.0.3";
 
     public static OpenAPI openAPI;
 
