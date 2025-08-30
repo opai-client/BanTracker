@@ -41,17 +41,16 @@ public class Tracker extends ExtensionModule implements EventHandler {
     private final HashMap<String, String> remoteApis = new HashMap<>();
     private final ModeValue apis;
     {
-        remoteApis.put("sakuraniroku","https://bantracker.23312355.xyz");
         remoteApis.put("niko233","https://bantracker.niko233.me");
         remoteApis.put("libxcnya","https://bantracker-api.xcnya.cn");
 
         String[] remotes = remoteApis.keySet().toArray(new String[0]);
 
-        apis = openAPI.getValueManager().createModes("Source", "sakuraniroku", remotes);
+        apis = openAPI.getValueManager().createModes("Source", "libxcnya", remotes);
 
     }
 
-    private final BooleanValue irc = openAPI.getValueManager().createBoolean("irc",true);
+    private final BooleanValue irc = openAPI.getValueManager().createBoolean("Send to IRC",false);
     {
         addValues(irc);
     }
@@ -123,10 +122,10 @@ public class Tracker extends ExtensionModule implements EventHandler {
                     { //IRC
                         if (irc.getValue()){
                             if (wdDiff > 0){
-                                openAPI.getIRC().sendMessage(String.format("[\uD83D\uDC15] [%s] banned %d player.", sdf.format(new Date()),wdDiff));
+                                openAPI.getIRC().sendMessage(String.format("[[\uD83D\uDC15] [%s] banned %d player.", sdf.format(new Date()),wdDiff));
                             }
                             if (stDiff > 0){
-                                openAPI.getIRC().sendMessage(String.format("[\uD83D\uDC6E] [%s] banned %d player.", sdf.format(new Date()),stDiff));
+                                openAPI.getIRC().sendMessage(String.format("[[\uD83D\uDC6E] [%s] banned %d player.", sdf.format(new Date()),stDiff));
                             }
                         }
                     }
