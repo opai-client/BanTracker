@@ -122,10 +122,10 @@ public class Tracker extends ExtensionModule implements EventHandler {
                     { //IRC
                         if (irc.getValue()){
                             if (wdDiff > 0){
-                                openAPI.getIRC().sendMessage(String.format("[[\uD83D\uDC15] [%s] banned %d player.", sdf.format(new Date()),wdDiff));
+                                //openAPI.getIRC().sendMessage(String.format("[[\uD83D\uDC15] [%s] banned %d player.", sdf.format(new Date()),wdDiff));
                             }
                             if (stDiff > 0){
-                                openAPI.getIRC().sendMessage(String.format("[[\uD83D\uDC6E] [%s] banned %d player.", sdf.format(new Date()),stDiff));
+                                //openAPI.getIRC().sendMessage(String.format("[[\uD83D\uDC6E] [%s] banned %d player.", sdf.format(new Date()),stDiff));
                             }
                         }
                     }
